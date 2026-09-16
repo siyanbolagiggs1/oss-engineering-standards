@@ -129,3 +129,16 @@
   sunsetting at monitors-v2. Cloud Run requires end-to-end HTTP/2 (h2c) for
   gRPC services. A product's self-host Helm chart deploys Envoy only while that
   product exposes a gRPC-Web path.
+- **gRPC s2s client resilience on Cloud Run (2026-09-16)**: Cloud Run
+  scale-to-zero and instance recycling sever the underlying HTTP/2 connection
+  without a graceful gRPC goodbye; a client that doesn't detect this holds a
+  "zombie" channel that looks alive but hangs every call until timeout
+  (tracked upstream as grpc/grpc-node#2397, reproduced on Cloud Run s2s).
+  Every gRPC client (Node, Go, Python) sets keepalive ping settings
+  (`grpc.keepalive_time_ms`/`keepalive_timeout_ms` or the language equivalent)
+  so a dead connection is detected within seconds, plus a retry policy
+  (`waitForReady: false`) so a call that lands on the dying connection fails
+  fast and reconnects instead of hanging. Required for any product that keeps
+  Cloud Run services scaled to zero between calls (the default posture) rather than 
+  paying for `min-instances >= 1`; expendit/apparule/upstat's node-go-python s2s mesh 
+  is the motivating case.
