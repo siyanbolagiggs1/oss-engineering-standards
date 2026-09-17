@@ -20,7 +20,12 @@ flowchart LR
     AC --> DATA[("per product: Firestore (apparule)<br/>or Aiven Postgres · + shared Aiven Redis<br/>· Cloud Storage")]
 ```
 - The reference implementation is **`cuesoftinc/apparule`** — when in doubt
-  about a convention's concrete shape, mirror it.
+  about a convention's concrete shape, mirror it. A repo with a real
+  multi-stage pipeline (a gateway + a processing service on top of `common`,
+  e.g. expendit's `intake`/`process`) is the exception to the single-`<svc>`
+  shape above — see "Multi-service pipelines" in `repository-and-services.md`
+  for how CRUD/processing/gateway responsibilities split across three real
+  services, connected by pub/sub rather than the diagram's implicit s2s call.
 - Auth: Firebase Authentication, **Google sign-in ONLY** — no username/password
   signup or login anywhere in the ecosystem. Enforce at three layers:
   Email/Password provider disabled on the Firebase project; backends reject
@@ -54,6 +59,11 @@ flowchart LR
 - Backends deploy to GCP Cloud Run (provisioned via the `cuesoft-iac` Pulumi
   ecosystem — never ad-hoc); frontends deploy to Firebase App Hosting; the
   Helm chart remains the self-host path.
+- **Serverless functions are reserved for probe/health-check style endpoints
+  only** (ratified for expendit/apparule/upstat's multi-service pipelines,
+  2026-09-17) — real request handling and business logic always live in a
+  containerized `api/<service>`, never split out into an ad-hoc Cloud
+  Function.
 - AI features use **Vertex AI** (Gemini via `aiplatform.googleapis.com`, ADC —
   see `cuesoft-iac/functions/cueprise-gemini-proxy`); no consumer AI-vendor
   API keys in cloud deployments. Self-host fallback: BYO Gemini/Groq env keys.
@@ -171,6 +181,30 @@ flowchart LR
   sunsetting at monitors-v2. Cloud Run requires end-to-end HTTP/2 (h2c) for
   gRPC services. A product's self-host Helm chart deploys Envoy only while that
   product exposes a gRPC-Web path.
+- **gRPC s2s client resilience on Cloud Run (2026-09-16)**: Cloud Run
+  scale-to-zero and instance recycling sever the underlying HTTP/2 connection
+  without a graceful gRPC goodbye; a client that doesn't detect this holds a
+  "zombie" channel that looks alive but hangs every call until timeout
+  (tracked upstream as grpc/grpc-node#2397, reproduced on Cloud Run s2s).
+  Every gRPC client (Node, Go, Python) sets keepalive ping settings
+  (`grpc.keepalive_time_ms`/`keepalive_timeout_ms` or the language equivalent)
+  so a dead connection is detected within seconds, plus a retry policy
+  (`waitForReady: false`) so a call that lands on the dying connection fails
+  fast and reconnects instead of hanging. Required for any product that keeps
+  Cloud Run services scaled to zero between calls (the default posture) rather
+  than paying for `min-instances >= 1`.
+- **Pub/sub (Aiven Kafka) is a standardized option** for async multi-language
+  processing pipelines where durability across a consumer restart matters
+  more than a live round-trip — e.g. a Node gateway handing a file to a
+  Python processing service. Chosen over direct gRPC s2s specifically because
+  Cloud Run's scale-to-zero can silently drop a gRPC connection (see the s2s
+  resilience note above), while a queue retains messages across a consumer
+  restart with zero loss (verified against a live Aiven Kafka instance,
+  SASL SCRAM-SHA-256 + TLS, 2026-09-16). Env vars: `KAFKA_BROKERS`,
+  `KAFKA_USERNAME`, `KAFKA_PASSWORD`, `KAFKA_SSL_CA` (identical names across
+  every language client). Each consumer runs its own consumer group; the
+  queue is the durability boundary, not caller-side retry logic. Expendit's
+  `api/intake` → `api/process` → `api/common` pipeline is the reference case.
 
 ## Documentation standard (docs/)
 
@@ -260,8 +294,10 @@ never ALLOWED_ORIGINS/FRONTEND_URL) · `REDIS_HOST/PORT/USERNAME/PASSWORD/TLS/DB
 (discrete, irealty pattern) · `BREVO_API_KEY/FROM_EMAIL/FROM_NAME` ·
 `GOOGLE_CLOUD_PROJECT` · `SERVICE_TOKEN_HASH` (server side of s2s token
 validation) · DB: `MONGO_URI`+`MONGO_DB` (Mongo era) / `DATABASE_URL`
-(Postgres era) / ADC for Firestore. CORS behaviour contract lives in each
-repo's engineering.md ("CORS contract" section).
+(Postgres era) / ADC for Firestore ·
+`KAFKA_BROKERS`/`KAFKA_USERNAME`/`KAFKA_PASSWORD`/`KAFKA_SSL_CA` (Aiven Kafka
+pub/sub, identical names in every language client). CORS behaviour contract
+lives in each repo's engineering.md ("CORS contract" section).
 
 ## Analytics events rule
 

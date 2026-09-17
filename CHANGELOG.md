@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- Multi-service pipeline canon: a repo may carry more than one non-`common`
+  service when a real multi-stage pipeline exists (gateway + processing),
+  with Go staying the CRUD/data owner, a processing service owning every
+  decision with no persistence of its own, and a gateway service staying
+  thin — expendit's `api/intake` (Node) + `api/process` (Python) is the
+  reference case.
+- Node API service standard (NestJS, `api/<service>`, distinct from `web`):
+  folder layout, file/folder naming row, `Dockerfile.node` +
+  `dockerignore.node` templates, and a NestJS 11.x version pin.
+- Pub/sub (Aiven Kafka) documented as a standardized transport alongside
+  gRPC and HTTP/JSON, with fleet-wide `KAFKA_BROKERS`/`KAFKA_USERNAME`/
+  `KAFKA_PASSWORD`/`KAFKA_SSL_CA` env names — chosen over gRPC s2s for
+  expendit/apparule/upstat's pipeline because it survives a Cloud Run
+  consumer restart with zero message loss (verified against a live Aiven
+  instance), where a gRPC channel can silently zombie on scale-to-zero.
+- Serverless functions are now explicitly scoped to probe/health-check
+  endpoints only; real logic always lives in a containerized `api/<service>`.
+- `organization-policy.md` picked up the gRPC s2s client resilience note
+  that `cloud-and-ci.md` already had (the two copies had drifted).
+
 ## [2.0.1] - 2026-07-23
 
 ### Fixed

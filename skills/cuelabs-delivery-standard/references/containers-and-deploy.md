@@ -41,6 +41,11 @@ Each repo has a root `docker-compose.yml` and a compose-driven `Makefile`
 - **Python services** — core `assets/templates/Dockerfile.python`: `python:3.12-slim`,
   non-root uid 10001, PORT-aware 127.0.0.1 `/health` healthcheck with a long
   start period (model loads), `uvicorn app.main:app`.
+- **Node API services (NestJS)** — core `assets/templates/Dockerfile.node`:
+  `node:24-slim` (glibc, same fleet Node single-truth as `web`), multi-stage
+  (`npm ci` → `npm run build` → `npm ci --omit=dev` for the runtime layer),
+  non-root `node` user, PORT-aware `/health` HEALTHCHECK, `node dist/main.js`.
+  Distinct from `Dockerfile.web` (that one serves the Next.js frontend).
 - **gRPC-Web repos** — run Envoy in compose (image pinned, config mounted from
   `deploy/helm/envoy/envoy.yaml`, backend network-aliased to the cluster
   target); Envoy takes the next port slot (e.g. upstat :8082) and the web image
@@ -49,7 +54,8 @@ Each repo has a root `docker-compose.yml` and a compose-driven `Makefile`
 **Port convention (parity across repos):** so muscle memory carries between
 services, every repo publishes the same host ports — `api/common` → **8080**,
 `web` → **3000**, and each additional API increments from there (**8081**, 8082, …;
-e.g. apparule's `api/measure` → 8081). Compose sets `PORT` and the published port
+e.g. apparule's `api/measure` → 8081; expendit's `api/intake` → 8081 and
+`api/process` → 8082 for its two-service pipeline). Compose sets `PORT` and the published port
 to the same value, and the web image's `NEXT_PUBLIC_BASE_URL` build arg targets
 `http://localhost:8080`.
 

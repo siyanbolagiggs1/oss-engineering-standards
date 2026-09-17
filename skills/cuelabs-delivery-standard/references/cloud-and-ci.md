@@ -12,6 +12,11 @@
 - Backends deploy to GCP Cloud Run (provisioned via the `cuesoft-iac` Pulumi
   ecosystem — never ad-hoc); frontends deploy to Firebase App Hosting; the
   Helm chart remains the self-host path.
+- **Serverless functions are reserved for probe/health-check style endpoints
+  only** (ratified for expendit/apparule/upstat's multi-service pipelines,
+  2026-09-17) — real request handling and business logic always live in a
+  containerized `api/<service>`, never split out into an ad-hoc Cloud
+  Function.
 - AI features use **Vertex AI** (Gemini via `aiplatform.googleapis.com`, ADC —
   see `cuesoft-iac/functions/cueprise-gemini-proxy`); no consumer AI-vendor
   API keys in cloud deployments. Self-host fallback: BYO Gemini/Groq env keys.
@@ -129,6 +134,18 @@
   sunsetting at monitors-v2. Cloud Run requires end-to-end HTTP/2 (h2c) for
   gRPC services. A product's self-host Helm chart deploys Envoy only while that
   product exposes a gRPC-Web path.
+- **Pub/sub (Aiven Kafka) is a standardized option** for async multi-language
+  processing pipelines where durability across a consumer restart matters
+  more than a live round-trip — e.g. a Node gateway handing a file to a
+  Python processing service. Chosen over direct gRPC s2s specifically because
+  Cloud Run's scale-to-zero can silently drop a gRPC connection (see the s2s
+  resilience note below), while a queue retains messages across a consumer
+  restart with zero loss (verified against a live Aiven Kafka instance,
+  SASL SCRAM-SHA-256 + TLS, 2026-09-16). Env vars: `KAFKA_BROKERS`,
+  `KAFKA_USERNAME`, `KAFKA_PASSWORD`, `KAFKA_SSL_CA` (identical names across
+  every language client). Each consumer runs its own consumer group; the
+  queue is the durability boundary, not caller-side retry logic. Expendit's
+  `api/intake` → `api/process` → `api/common` pipeline is the reference case.
 - **gRPC s2s client resilience on Cloud Run (2026-09-16)**: Cloud Run
   scale-to-zero and instance recycling sever the underlying HTTP/2 connection
   without a graceful gRPC goodbye; a client that doesn't detect this holds a

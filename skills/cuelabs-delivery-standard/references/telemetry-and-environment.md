@@ -39,6 +39,8 @@ never ALLOWED_ORIGINS/FRONTEND_URL) · `REDIS_HOST/PORT/USERNAME/PASSWORD/TLS/DB
 (discrete, irealty pattern) · `BREVO_API_KEY/FROM_EMAIL/FROM_NAME` ·
 `GOOGLE_CLOUD_PROJECT` · `SERVICE_TOKEN_HASH` (server side of s2s token
 validation) · DB: `MONGO_URI`+`MONGO_DB` (Mongo era) / `DATABASE_URL`
-(Postgres era) / ADC for Firestore. CORS behaviour contract lives in each
-repo's engineering.md ("CORS contract" section).
+(Postgres era) / ADC for Firestore ·
+`KAFKA_BROKERS`/`KAFKA_USERNAME`/`KAFKA_PASSWORD`/`KAFKA_SSL_CA` (Aiven Kafka
+pub/sub, identical names in every language client). CORS behaviour contract
+lives in each repo's engineering.md ("CORS contract" section).
 
