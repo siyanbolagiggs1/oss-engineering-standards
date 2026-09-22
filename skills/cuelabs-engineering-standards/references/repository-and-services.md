@@ -15,10 +15,10 @@
 api/
   common/            Go backend — auth + core API. ALWAYS named "common".
   <service-name>/    Additional services, named by FUNCTION not language:
-                     e.g. measure (apparule, Python pose), observability
-                     (upstat, Python), intake + process (expendit — Node
-                     upload gateway + Python processing, a real 3-service
-                     pipeline; see "Multi-service pipelines" below).
+                     e.g. measure (Python pose estimation), observability
+                     (Python ingest), intake + process (Node upload gateway
+                     + Python processing, a real multi-service pipeline;
+                     see "Multi-service pipelines" below).
 web/                 Next.js marketing site + dashboard
 mobile/
   flutter/           Primary cross-platform app (Dart)
@@ -42,8 +42,8 @@ directory when a real service exists — do not add empty placeholder directorie
 
 ### Multi-service pipelines (more than one non-common service)
 Most repos need only `api/common` + one other service. A repo needs **more**
-than that when a real multi-stage pipeline exists — e.g. expendit's receipt
-flow: a Node gateway receives the upload, a Python service does the actual
+than that when a real multi-stage pipeline exists — e.g. a document flow
+where a Node gateway receives the upload, a Python service does the actual
 extraction/decision work, and Go persists the result. In that shape:
 - **Go (`api/common`) is the CRUD/data owner ONLY** — it persists what other
   services decide, it never makes classification/detection decisions itself.
@@ -117,7 +117,7 @@ ecosystem, and **must not** point at dead/deprecated directories. It has **no**
 `github-actions` entry — CI workflow conventions and shared jobs are org canon
 kept byte-identical across repos and updated deliberately in canon passes,
 never by a per-repo bot. Product files may add only explicitly ratified
-surface jobs/workflows (for example Apparule mobile); the tag-gated
+surface jobs/workflows (for example the mobile workflows); the tag-gated
 `release.yml` remains a shared fleet file when it lands.
 
 ## Service structure (production)
@@ -216,12 +216,12 @@ Helm, or Terraform. The structural rules:
 Remove (safe — not application code):
 - **Non-canonical GitHub Actions workflow files**: preserve the ratified
   `.github/workflows/build-and-test.yml`, the deferred tag-gated `release.yml`
-  when present, and ratified surface workflows such as Apparule's
+  when present, and ratified surface workflows such as the mobile
   `mobile-goldens.yml` and `mobile-e2e.yml`; remove obsolete, duplicate,
   misplaced, or unratified workflow files.
 - Buggy/one-off scripts (e.g. old `refactor-structure.sh`).
 - Stale planning/aspirational docs that no longer match reality.
-- Generated artifacts committed by mistake (e.g. `output_landmarks.jpg`),
+- Generated artifacts committed by mistake (e.g. model output images),
   committed build binaries, `tmp/` output.
 - Dead `.gitkeep` files in directories that now hold real content.
 
@@ -239,7 +239,8 @@ Never remove:
    Makefile, docs, CI). Go modules with logical/bare module names are unaffected
    by folder moves; only path-based module names need a `go.mod` + import
    rewrite.
-4. Add the community-health/config files (mirror apparule, adapt content).
+4. Add the community-health/config files from `assets/templates/` (the
+   bundled CLI's `apply` copies the missing ones).
 5. Create any missing standard dirs (`deploy/{docker,helm,terraform}`, `scripts`)
    with `.gitkeep` placeholders.
 6. Apply the cleanup rules above.

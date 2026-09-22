@@ -48,14 +48,15 @@ Each repo has a root `docker-compose.yml` and a compose-driven `Makefile`
   Distinct from `Dockerfile.web` (that one serves the Next.js frontend).
 - **gRPC-Web repos** — run Envoy in compose (image pinned, config mounted from
   `deploy/helm/envoy/envoy.yaml`, backend network-aliased to the cluster
-  target); Envoy takes the next port slot (e.g. upstat :8082) and the web image
+  target); Envoy takes the next free port slot after the APIs and the web image
   gets `NEXT_PUBLIC_ENVOY_URL` as a build arg.
 
 **Port convention (parity across repos):** so muscle memory carries between
 services, every repo publishes the same host ports — `api/common` → **8080**,
-`web` → **3000**, and each additional API increments from there (**8081**, 8082, …;
-e.g. apparule's `api/measure` → 8081; expendit's `api/intake` → 8081 and
-`api/process` → 8082 for its two-service pipeline). Compose sets `PORT` and the published port
+`web` → **3000**, and each additional API increments from there in the order
+it was added (**8081**, 8082, …; a two-service pipeline takes 8081 for the
+gateway and 8082 for the processor). The product records its assignments in
+`docs/decisions.md`. Compose sets `PORT` and the published port
 to the same value, and the web image's `NEXT_PUBLIC_BASE_URL` build arg targets
 `http://localhost:8080`.
 

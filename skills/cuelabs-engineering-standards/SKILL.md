@@ -34,6 +34,9 @@ to change, fix, bootstrap, or standardize the repository.
   policy.
 - Read [references/project-manifest.md](references/project-manifest.md) before
   authoring or repairing `.cuelabs/project.yaml`.
+- Read [references/product-decisions.md](references/product-decisions.md)
+  when bootstrapping a product or auditing whether its per-product values
+  (slug, default theme, ports, data store, and so on) are recorded.
 - Read [references/qa-and-orchestration.md](references/qa-and-orchestration.md)
   when coordinating multiple repositories or closing a QA/merge loop.
 - Read [references/recommended-versions.md](references/recommended-versions.md)
