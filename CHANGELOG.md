@@ -29,6 +29,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - `organization-policy.md` picked up the gRPC s2s client resilience note
   that `cloud-and-ci.md` already had (the two copies had drifted).
 
+### Changed
+
+- References no longer carry duplicate copies of the same canon. Each topic
+  has one owner: cloud/CI, containers/deploy, and telemetry/environment live
+  in `cuelabs-delivery-standard`; API conventions, docs contracts, and
+  analytics live in `organization-policy.md`; the design documentation
+  standard lives in `cuelabs-design-standard`; orchestration and QA loops
+  live in `qa-and-orchestration.md`; changelog discipline lives in
+  `repository-and-services.md`. The engineering skill keeps short summaries
+  that point at the owning skill, so it still works when installed alone.
+
+### Removed
+
+- `cuelabs-design-standard/references/qa-loop.md`, an identical copy of
+  `qa-and-orchestration.md`.
+
 ## [2.0.1] - 2026-07-23
 
 ### Fixed

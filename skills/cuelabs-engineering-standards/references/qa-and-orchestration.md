@@ -1,4 +1,4 @@
-## Orchestration & QA-loop standard
+# Orchestration and QA loops
 
 How CueLABS™ work is executed with an orchestrator + subagents (ratified
 2026-07-18; applies to design, web, and future phases):

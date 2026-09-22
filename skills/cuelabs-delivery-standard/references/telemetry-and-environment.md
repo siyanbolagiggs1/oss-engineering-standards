@@ -1,16 +1,9 @@
-## Ecosystem API conventions
+# Telemetry and environment
 
-- Versioned base path `/api/v1` (products) — upstat's public surfaces use
-  `/v1` (events/stats/query are cross-product infrastructure).
-- Error envelope `{"error": {"code", "message", "details?"}}`; codes are
-  **snake_case and stable**, owned by the flow docs (never invented in code
-  review). Cross-tenant access returns `404`, never `403`.
-- Cursor pagination (`?cursor=&limit=`, default 50).
-- `Idempotency-Key` header on any client-retryable mutation (uploads,
-  payments, submissions) — retries must never duplicate.
-- Rate limits per engineering.md; `429` + `Retry-After`.
-- Auth: Firebase ID-token bearer (Google-only); machine identities
-  (service tokens, property keys) never grant user-API access.
+## Contents
+
+- Telemetry standard
+- Environment-variable naming standard
 
 ## Telemetry standard (OpenTelemetry, X-9)
 

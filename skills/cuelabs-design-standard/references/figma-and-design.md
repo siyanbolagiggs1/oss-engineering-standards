@@ -14,13 +14,8 @@ easings, z-index layers (0/10/20/30/40/50), **Lucide** icons, focus ring
 (2px accent, offset 2, :focus-visible). The foundations rows are identical
 across products — changing one is an ecosystem PR touching all three.
 
-**Docs describe the current system** (ratified 2026-07-19): design docs are
-a snapshot of what is on `main` NOW, not a changelog. Decision markers
-(`[Decided …]` / `[Directive …]`) and as-built notes describing the current
-construction stay; archaeology does not — once a replacement lands, clauses
-like "replaces X", "drops Y", "formerly Z", references to retired legacy
-trees, or pointers at Deprecated-page parking are removed in the same pass
-(git history and PRs are the changelog).
+**Docs describe the current system**: design docs are a snapshot of what
+is on `main` now, not a changelog; git history and PRs are the changelog.
 
 ### Figma component-library standard
 

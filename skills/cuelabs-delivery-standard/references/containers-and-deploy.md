@@ -72,21 +72,3 @@ Gotchas that cost real time:
   belongs in cookies, written and read by the same names.
 - All healthchecks (web and APIs) target `127.0.0.1`, never `localhost`
   (IPv6 resolution causes false-unhealthy containers).
-
-## Cleanup rules (when standardizing)
-Remove (safe — not application code):
-- **Non-canonical GitHub Actions workflow files**: preserve the ratified
-  `.github/workflows/build-and-test.yml`, the deferred tag-gated `release.yml`
-  when present, and ratified surface workflows such as Apparule's
-  `mobile-goldens.yml` and `mobile-e2e.yml`; remove obsolete, duplicate,
-  misplaced, or unratified workflow files.
-- Buggy/one-off scripts (e.g. old `refactor-structure.sh`).
-- Stale planning/aspirational docs that no longer match reality.
-- Generated artifacts committed by mistake (e.g. `output_landmarks.jpg`),
-  committed build binaries, `tmp/` output.
-- Dead `.gitkeep` files in directories that now hold real content.
-
-Never remove:
-- **Application code**, service assets/models, or test fixtures.
-- Placeholder `.gitkeep`s in genuinely-empty standard dirs (`deploy/*`,
-  `mobile/android`, `mobile/ios`, `scripts`).

@@ -108,13 +108,6 @@
     `── section ──` comment headers; `web/.env.example` stays headerless.
   - **next.config**: `devIndicators: { position: "bottom-right" }` — keep
     the dev indicator, keep it out of content corners.
-  - **Changelog PR refs**: every entry carries its `(#NNN)` ref; a lane
-    writing entries pre-merge opens the PR first, then amends the entry
-    with the real number before handoff (refs are part of the entry, not
-    optional garnish). Entries are APPENDED INTO the section's existing
-    bucket heading — emitting a second `### Added`/`### Fixed` heading is
-    the defect that forced dedup rounds in every repo (apparule twice);
-    grep for an existing heading before writing one.
 - Transactional email: **Brevo REST API** only (`BREVO_API_KEY/FROM_EMAIL/
   FROM_NAME` via Doppler; irealty is the reference) — **no SMTP** in any
   CueLABS™ product.

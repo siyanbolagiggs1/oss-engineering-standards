@@ -73,14 +73,6 @@ listed shared files are BYTE-IDENTICAL across repos — verify by shasum):
   converged all dashboard routes to one ~350K chunk union; intent
   prefetch keeps cold routes at their own chunk set (−42% settled JS)
   while hover/focus still fires the fetch before click completes.
-  **Changelog discipline (ratified 2026-07-21)**: Keep a Changelog
-  strictly — ONE `### <Bucket>` heading per bucket per section, in
-  canonical order (Added, Changed, Deprecated, Removed, Fixed,
-  Security). Top-ups MERGE entries into the existing bucket headings
-  under `[Unreleased]`, never append a second `### Changed` (five
-  duplicate heading sets accumulated across three repos before this
-  was caught — user-flagged). The standards repo's own CHANGELOG gets
-  an entry with every SKILL canon merge, same rules.
   **A11y closeout canons (ratified 2026-07-21, fleet)**: (1) every
   route ships a skip-to-content link — `components/ui/SkipLink.tsx`,
   first focusable in the root layout/shell, `href="#main"`, hidden
