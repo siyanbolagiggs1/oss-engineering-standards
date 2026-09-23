@@ -47,6 +47,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   `git init` through `init`, parameter decisions, `apply`, per-surface
   scaffolding, delivery, and `verify`; the README shows the quick start.
 - Trigger evaluation cases for starting a new product.
+- Bootstrapping asks before it decides: the engineering skill confirms the
+  product slug, display name, profile, and surface statuses with the user
+  before `init`, proposes each `P-nn` value with a reason and records it only
+  once confirmed, and reports unconfirmed values as open decisions.
 
 ### Changed
 

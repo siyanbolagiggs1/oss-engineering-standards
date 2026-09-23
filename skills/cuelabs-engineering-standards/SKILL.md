@@ -20,7 +20,11 @@ is active, planned, or intentionally absent.
 - **Bootstrap**: start a new product with the bundled script's `init`
   operation, then create only the surfaces the user requested; never create
   empty application placeholders. Follow "Procedure B" in
-  `references/repository-and-services.md`.
+  `references/repository-and-services.md`. Before running `init`, ask the
+  user for anything they have not given: the product slug (you may suggest
+  one from the directory name), display name, profile, and each surface's
+  status. Before filling a product decision, propose a value with a one-line
+  reason and wait for the user's answer.
 - **Verify**: run deterministic checks and report evidence.
 
 Default to **audit** for review requests. Use **apply** only when the user asks
@@ -113,6 +117,8 @@ unless the task actually touches that surface.
   or project manifest with a shared template.
 - Never present product-specific policy as a portable OSS requirement.
 - Never silently resolve an explicit documented deviation.
+- Never record a product decision (`P-nn` value) or manifest identity the user
+  has not confirmed; leave it `—` and list it as an open decision.
 - Keep shared files byte-identical only when the standard marks them shared;
   keep product variation in manifests, scripts, or documented extension points.
 

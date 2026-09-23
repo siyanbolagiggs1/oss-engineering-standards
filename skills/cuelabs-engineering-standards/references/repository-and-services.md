@@ -253,21 +253,32 @@ Start from an empty repository and add surfaces only as they become real.
 
 1. **Create the repo**: `git init`, a `README.md` (product overview) and a
    Keep a Changelog `CHANGELOG.md` with an empty `[Unreleased]` section.
-2. **Declare the product**: run
-   `<cli> init --repo . --name <product> --surface web=planned`
-   with one `--surface NAME=STATUS` per surface (`web`, `backend`,
-   `mobile.flutter`, …). It writes `.cuelabs/project.yaml` and, for the
-   `cuelabs` profile, `docs/decisions.md` seeded with the Standard
-   parameters table. It never overwrites either file.
-3. **Decide the parameters**: fill in the `P-01`…`P-16` rows in
-   `docs/decisions.md` for every surface you are about to build (see
-   `product-decisions.md`). Rows for `planned`/`absent` surfaces may read
-   `n/a`.
-4. **Copy the shared files**: `<cli> apply --repo .` copies every missing
+2. **Confirm the identity with the user**: the product slug (lowercase,
+   hyphens; it becomes the repo name, URLs, and storage keys, so it is hard
+   to change later), the display name, the profile (`cuelabs` for CueLABS™
+   products, `base` for outside teams), and each surface's status. Ask for
+   whatever the user has not stated; a slug suggested from the directory
+   name still needs a yes.
+3. **Declare the product**: run
+   `<cli> init --repo . --name <product> --display-name "<Product>"
+   --surface web=planned` with one `--surface NAME=STATUS` per surface
+   (`web`, `backend`, `mobile.flutter`, …). It writes
+   `.cuelabs/project.yaml` and, for the `cuelabs` profile,
+   `docs/decisions.md` seeded with the Standard parameters table. It never
+   overwrites either file.
+4. **Decide the parameters with the user**: for each `P-nn` row that a
+   surface about to be built needs (see the "Used by" column in
+   `product-decisions.md`), propose a value with a one-line reason — e.g.
+   "P-04 default theme: dark, because the product is a developer tool" —
+   and record it only after the user confirms. Batch the proposals into one
+   question rather than asking row by row. Rows for `planned`/`absent`
+   surfaces read `n/a`; rows the user defers stay `—` and are reported as
+   open decisions.
+5. **Copy the shared files**: `<cli> apply --repo .` copies every missing
    profile-managed file (community health, `.gitignore`, `.editorconfig`,
    and — once a surface is `active` — the `Makefile`, `.dockerignore`, and
    `.env.example`).
-5. **Build a surface** when it moves to `active` (update the manifest in
+6. **Build a surface** when it moves to `active` (update the manifest in
    the same change):
    - `web`: `npx create-next-app@<version>` (see versions), then apply the
      web standard (`$cuelabs-web-standard`).
@@ -277,8 +288,8 @@ Start from an empty repository and add surfaces only as they become real.
      language layout above, on the next free port.
    - `mobile/flutter`: `flutter create` inside `mobile/flutter`, then apply
      `$cuelabs-mobile-standard`.
-6. **Add delivery** once a surface is build-ready: its CI job, Dockerfile
+7. **Add delivery** once a surface is build-ready: its CI job, Dockerfile
    from `assets/templates/`, and compose/Helm entries
    (`$cuelabs-delivery-standard`).
-7. **Verify**: `<cli> verify --repo .` plus the surface's own lint, test,
+8. **Verify**: `<cli> verify --repo .` plus the surface's own lint, test,
    and build commands.
