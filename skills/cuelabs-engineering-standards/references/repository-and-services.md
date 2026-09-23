@@ -248,9 +248,37 @@ Never remove:
    Open a PR (do not self-merge without review).
 
 ## Procedure B — bootstrap a new repo
-1. Create the structure above (only the services you actually have).
-2. `web`: `npx create-next-app@<version>` (see versions).
-3. `api/common`: `go mod init github.com/cuesoftinc/<repo>/api/common` + Gin.
-4. `mobile/flutter`: `flutter create`.
-5. Add all community-health/config files from `assets/templates/`.
-6. Wire `deploy/helm` to deploy every service.
+Start from an empty repository and add surfaces only as they become real.
+`<cli>` is `python3 <skill-dir>/scripts/cuelabs_standard.py`.
+
+1. **Create the repo**: `git init`, a `README.md` (product overview) and a
+   Keep a Changelog `CHANGELOG.md` with an empty `[Unreleased]` section.
+2. **Declare the product**: run
+   `<cli> init --repo . --name <product> --surface web=planned`
+   with one `--surface NAME=STATUS` per surface (`web`, `backend`,
+   `mobile.flutter`, …). It writes `.cuelabs/project.yaml` and, for the
+   `cuelabs` profile, `docs/decisions.md` seeded with the Standard
+   parameters table. It never overwrites either file.
+3. **Decide the parameters**: fill in the `P-01`…`P-16` rows in
+   `docs/decisions.md` for every surface you are about to build (see
+   `product-decisions.md`). Rows for `planned`/`absent` surfaces may read
+   `n/a`.
+4. **Copy the shared files**: `<cli> apply --repo .` copies every missing
+   profile-managed file (community health, `.gitignore`, `.editorconfig`,
+   and — once a surface is `active` — the `Makefile`, `.dockerignore`, and
+   `.env.example`).
+5. **Build a surface** when it moves to `active` (update the manifest in
+   the same change):
+   - `web`: `npx create-next-app@<version>` (see versions), then apply the
+     web standard (`$cuelabs-web-standard`).
+   - `api/common`: `go mod init github.com/cuesoftinc/<product>/api/common`
+     + Gin, in the Go layout above.
+   - Additional services: `api/<function>` per the naming rule and the
+     language layout above, on the next free port.
+   - `mobile/flutter`: `flutter create` inside `mobile/flutter`, then apply
+     `$cuelabs-mobile-standard`.
+6. **Add delivery** once a surface is build-ready: its CI job, Dockerfile
+   from `assets/templates/`, and compose/Helm entries
+   (`$cuelabs-delivery-standard`).
+7. **Verify**: `<cli> verify --repo .` plus the surface's own lint, test,
+   and build commands.

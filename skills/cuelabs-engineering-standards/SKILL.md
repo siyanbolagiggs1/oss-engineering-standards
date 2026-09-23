@@ -17,8 +17,10 @@ is active, planned, or intentionally absent.
 - **Plan**: produce an ordered change plan and explicit assumptions without
   changing files.
 - **Apply**: make the requested standardization changes, then verify them.
-- **Bootstrap**: create only the surfaces the user requested; never create empty
-  application placeholders.
+- **Bootstrap**: start a new product with the bundled script's `init`
+  operation, then create only the surfaces the user requested; never create
+  empty application placeholders. Follow "Procedure B" in
+  `references/repository-and-services.md`.
 - **Verify**: run deterministic checks and report evidence.
 
 Default to **audit** for review requests. Use **apply** only when the user asks

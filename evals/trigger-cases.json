@@ -2,6 +2,26 @@
   "skills": {
     "cuelabs-engineering-standards": [
       {
+        "prompt": "Start a brand-new CueLABS product repository from scratch.",
+        "expect": "trigger"
+      },
+      {
+        "prompt": "Set up the project manifest and decisions register for our new product.",
+        "expect": "trigger"
+      },
+      {
+        "prompt": "Which values does a new product have to decide before building its web app?",
+        "expect": "trigger"
+      },
+      {
+        "prompt": "Initialize a new npm package for this utility library.",
+        "expect": "do-not-trigger"
+      },
+      {
+        "prompt": "Should a new product start with the base profile or the cuelabs profile?",
+        "expect": "ambiguous"
+      },
+      {
         "prompt": "Audit this repository against CueLABS standards.",
         "expect": "trigger"
       },

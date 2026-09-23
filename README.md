@@ -101,9 +101,21 @@ python3 skills/cuelabs-engineering-standards/scripts/cuelabs_standard.py \
   audit --repo /path/to/repository
 ```
 
-Available operations are `audit`, `plan`, `apply`, and `verify`. `apply` copies
-only missing profile-managed files; it never overwrites existing files or
-writes through symlinked paths.
+Available operations are `init`, `audit`, `plan`, `apply`, and `verify`.
+`init` starts a new product: it writes `.cuelabs/project.yaml` and a
+`docs/decisions.md` seeded with the product parameters to decide. `apply`
+copies only missing profile-managed files. Neither overwrites existing files
+or writes through symlinked paths.
+
+Start a brand-new product:
+
+```bash
+git init acme && cd acme
+printf '# Acme\n' > README.md && printf '# Changelog\n' > CHANGELOG.md
+python3 <skill-dir>/scripts/cuelabs_standard.py init --repo . \
+  --name acme --surface web=planned
+python3 <skill-dir>/scripts/cuelabs_standard.py apply --repo .
+```
 
 ## Profiles and project state
 

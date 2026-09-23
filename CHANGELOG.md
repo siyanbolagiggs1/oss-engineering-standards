@@ -38,6 +38,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   a providing product is named.
 - `validate_catalog.py` fails when a product name appears under `skills/`
   outside that table, or when a reference carries a dated ratification note.
+- `cuelabs_standard.py init --name <product> --surface NAME=STATUS`: starts a
+  new product from an empty repository by writing `.cuelabs/project.yaml`
+  and, for the `cuelabs` profile, a `docs/decisions.md` seeded with the
+  Standard parameters table (`assets/templates/decisions.md`). It validates
+  the manifest before writing and never overwrites either file.
+- "Procedure B — bootstrap a new repo" is now a full walkthrough, from
+  `git init` through `init`, parameter decisions, `apply`, per-surface
+  scaffolding, delivery, and `verify`; the README shows the quick start.
+- Trigger evaluation cases for starting a new product.
 
 ### Changed
 
