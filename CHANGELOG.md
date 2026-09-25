@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- `cuelabs-system-design` skill: designs a product's system from a PRD, a
+  repository, or a description, following the language-by-role pipeline
+  rule. It decides the services (including when to split a processing
+  service versus run worker pools), how they communicate, and who owns each
+  store, and adds reusable patterns: upload tickets, claim-check, outbox,
+  versioned results, and raw provider events. It writes
+  `docs/system-design.md` and renders a self-contained diagram page
+  (`scripts/render_design.py`, stdlib only) with Excalidraw and Mermaid copy
+  buttons, a layout checker, and an artifact mode for hosts that publish
+  pages.
 - Multi-service pipeline canon: a repo may carry more than one non-`common`
   service when a real multi-stage pipeline exists (gateway + processing),
   with Go staying the CRUD/data owner, a processing service owning every

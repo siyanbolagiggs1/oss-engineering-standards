@@ -129,6 +129,40 @@
         "prompt": "Check whether the product experience is consistent.",
         "expect": "ambiguous"
       }
+    ],
+    "cuelabs-system-design": [
+      {
+        "prompt": "Design the backend system for this product from its PRD.",
+        "expect": "trigger"
+      },
+      {
+        "prompt": "Draw an architecture diagram for our app and put it in a page I can share.",
+        "expect": "trigger"
+      },
+      {
+        "prompt": "How many services does this product need, and how should they talk to each other?",
+        "expect": "trigger"
+      },
+      {
+        "prompt": "Update our system design now that uploads need consent checks first.",
+        "expect": "trigger"
+      },
+      {
+        "prompt": "Write the Go handler that saves an uploaded receipt.",
+        "expect": "do-not-trigger"
+      },
+      {
+        "prompt": "Fix the failing Helm lint in this repository.",
+        "expect": "do-not-trigger"
+      },
+      {
+        "prompt": "Explain the difference between Kafka and RabbitMQ.",
+        "expect": "do-not-trigger"
+      },
+      {
+        "prompt": "Should this service use Kafka or call the other service directly?",
+        "expect": "ambiguous"
+      }
     ]
   }
 }

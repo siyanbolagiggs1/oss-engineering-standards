@@ -62,6 +62,8 @@ For a focused surface, activate the matching installed skill:
 - `$cuelabs-mobile-standard`
 - `$cuelabs-design-standard`
 - `$cuelabs-delivery-standard`
+- `$cuelabs-system-design` (whole-system design, service breakdown, and
+  architecture diagrams)
 
 Do not duplicate a focused skill's full guidance into the working context
 unless the task actually touches that surface.
