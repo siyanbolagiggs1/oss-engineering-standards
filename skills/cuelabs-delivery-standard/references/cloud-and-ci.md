@@ -126,23 +126,44 @@
   processing pipelines where durability across a consumer restart matters
   more than a live round-trip — e.g. a Node gateway handing a file to a
   Python processing service. Preferred over direct gRPC s2s for that shape
-  because Cloud Run's scale-to-zero can silently drop a gRPC connection (see
-  the s2s resilience note below), while a queue retains messages across a
-  consumer restart with zero loss (Aiven Kafka uses SASL SCRAM-SHA-256 +
-  TLS). Env vars: `KAFKA_BROKERS`, `KAFKA_USERNAME`, `KAFKA_PASSWORD`,
-  `KAFKA_SSL_CA` (identical names across every language client). Each
-  consumer runs its own consumer group; the queue is the durability boundary,
-  not caller-side retry logic. The canonical shape is gateway `api/<gateway>`
-  → processing `api/<processor>` → `api/common`.
+  because the queue, not caller-side retry logic, is the durability
+  boundary: a message published while its consumer is restarting or
+  redeploying is retained and consumed afterwards (Aiven Kafka uses SASL
+  SCRAM-SHA-256 + TLS). Env vars: `KAFKA_BROKERS`, `KAFKA_USERNAME`,
+  `KAFKA_PASSWORD`, `KAFKA_SSL_CA` (identical names across every language
+  client). Each consumer runs its own consumer group. The canonical shape is
+  gateway `api/<gateway>` → processing `api/<processor>` → `api/common`.
+- **Kafka consumers need a running workload.** A Kafka message does not
+  start a Cloud Run instance that has scaled to zero, and under the default
+  request-based billing an instance gets no CPU outside a request, so a
+  consumer on a default Cloud Run service stops consuming. Every Kafka
+  consumer runs as one of:
+  - a **Cloud Run worker pool** (the default: always-on, no HTTP ingress);
+  - a Cloud Run service with `min-instances >= 1` **and** instance-based
+    billing (CPU always allocated);
+  - another explicit wake-up path, documented in the product's
+    `docs/deployment.md` with how queued messages are drained after a wake.
+
+  Record the always-on cost against any free-tier goal. See Google's
+  [instance autoscaling](https://docs.cloud.google.com/run/docs/about-instance-autoscaling)
+  notes for the scale-from-zero and background-CPU limits.
 - **gRPC s2s client resilience on Cloud Run**: Cloud Run
-  scale-to-zero and instance recycling sever the underlying HTTP/2 connection
-  without a graceful gRPC goodbye; a client that doesn't detect this holds a
-  "zombie" channel that looks alive but hangs every call until timeout
-  (tracked upstream as grpc/grpc-node#2397).
-  Every gRPC client (Node, Go, Python) sets keepalive ping settings
-  (`grpc.keepalive_time_ms`/`keepalive_timeout_ms` or the language equivalent)
-  so a dead connection is detected within seconds, plus a retry policy
-  (`waitForReady: false`) so a call that lands on the dying connection fails
-  fast and reconnects instead of hanging. Required for any product that keeps
-  Cloud Run services scaled to zero between calls (the default posture) rather
-  than paying for `min-instances >= 1`.
+  scale-to-zero and instance recycling can sever the underlying HTTP/2
+  connection without a graceful gRPC goodbye, leaving a channel that looks
+  alive but hangs calls. Every gRPC client (Node, Go, Python):
+  - sets a **deadline on every call**, so no call can hang indefinitely;
+  - declares a **[retry policy](https://grpc.io/docs/guides/retry/)** in its
+    service config for methods that are safe to retry (idempotent reads and
+    idempotent writes only): a bounded `maxAttempts`, exponential backoff,
+    and `retryableStatusCodes` limited to `UNAVAILABLE`. `waitForReady: false`
+    is not a retry policy; it is the default fail-fast behavior;
+  - sets **[keepalive](https://grpc.io/docs/guides/keepalive/)**
+    (`grpc.keepalive_time_ms`/`keepalive_timeout_ms` or the language
+    equivalent) to detect a dead connection during active calls. Pings on
+    an idle connection need `keepalive_permit_without_calls` and a ping
+    interval the peer accepts (on Cloud Run the peer is Google's front end,
+    not the service), so do not rely on idle detection: the deadline and
+    retry policy are the guarantee.
+
+  Required for any product that keeps Cloud Run services scaled to zero
+  between calls (the default posture for request-driven services).

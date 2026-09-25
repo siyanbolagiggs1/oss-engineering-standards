@@ -24,7 +24,7 @@ decided; a parameter whose surface is `absent` or `planned` may read `n/a`.
 | P-11 | Service transport | — | |
 | P-12 | KYC tier contents | — | |
 | P-13 | Destructive-confirm token | — | |
-| P-14 | Discord channel | #{{product}}-lab | Must exist before copy ships |
+| P-14 | Discord channel | — | Proposed: `#{{product}}-lab`; must exist before copy ships |
 | P-15 | Lint extensions | — | |
 | P-16 | Mobile application ID | — | |
 

@@ -34,6 +34,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   expendit/apparule/upstat's pipeline because it survives a Cloud Run
   consumer restart with zero message loss (verified against a live Aiven
   instance), where a gRPC channel can silently zombie on scale-to-zero.
+  Kafka consumers must run as a Cloud Run worker pool, or as a service with
+  `min-instances >= 1` and instance-based billing, since a message does not
+  wake a scaled-to-zero instance.
+- gRPC s2s client resilience on Cloud Run: a deadline on every call, a real
+  retry policy (bounded attempts, backoff, `UNAVAILABLE` only) for
+  idempotent methods, and keepalive for active calls. `waitForReady: false`
+  is no longer described as a retry policy, and idle dead-connection
+  detection is no longer promised.
 - Serverless functions are now explicitly scoped to probe/health-check
   endpoints only; real logic always lives in a containerized `api/<service>`.
 - `organization-policy.md` picked up the gRPC s2s client resilience note

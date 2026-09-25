@@ -599,7 +599,7 @@ class StandardsCliTest(unittest.TestCase):
         decisions = (self.repo / "docs" / "decisions.md").read_text(encoding="utf-8")
         self.assertIn("# Acme Labs — Decisions", decisions)
         self.assertIn("| P-01 | Product slug | acme-labs |", decisions)
-        self.assertIn("#acme-labs-lab", decisions)
+        self.assertIn("| P-14 | Discord channel | — | Proposed: `#acme-labs-lab`", decisions)
         self.assertNotIn("{{", decisions)
 
     def test_init_then_apply_reaches_conformance_on_empty_repo(self) -> None:

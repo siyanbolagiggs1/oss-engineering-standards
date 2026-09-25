@@ -167,9 +167,10 @@ config compacted. Grant each service's queue user only its topics.
 
 ## Deployment
 
-- Queue consumers never scale to zero: run them as worker pools, or keep the
-  consuming service at a minimum of one instance. Say what that costs
-  against any free-tier goal.
+- Queue consumers never scale to zero: a message does not wake a scaled-to-
+  zero instance. Run them as worker pools, or keep the consuming service at
+  a minimum of one instance with instance-based billing (CPU always
+  allocated). Say what that costs against any free-tier goal.
 - Request-driven services with no consumer may scale to zero.
 - Scheduled lookup-then-write work runs as scheduled jobs from the owner's
   image; scheduled decisions run from the processing image.
